@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <video id="video" autoplay></video>
+    <canvas id="canvas" style="display: none;"></canvas>
+    <button onclick="startVideo()">Bắt đầu video</button>
+    <button onclick="stopVideo()">Dừng video</button>
+    <button onclick="captureImage()">Chụp ảnh</button>
+    <script>
+      function stopVideo() {
+  // Lấy đối tượng video
+  const video = document.getElementById('video');
+
+  // Dừng luồng video
+  const stream = video.srcObject;
+  const tracks = stream.getTracks();
+
+  tracks.forEach(track => {
+    track.stop();
+  });
+
+  // Xóa nguồn video
+  video.srcObject = null;
+}
+function startVideo() {
+  // Lấy đối tượng video
+  const video = document.getElementById('video');
+
+  // Yêu cầu quyền truy cập vào camera
+  navigator.mediaDevices.getUserMedia({ video: true })
+    .then(stream => {
+      // Gán luồng video cho đối tượng video
+      video.srcObject = stream;
+      video.play();
+    })
+    .catch(error => {
+      console.error('Lỗi khi truy cập camera:', error);
+    });
+}
+
+function captureImage() {
+  // Lấy đối tượng video và canvas
+  const video = document.getElementById('video');
+  const canvas = document.getElementById('canvas');
+  const context = canvas.getContext('2d');
+
+  // Đặt kích thước canvas bằng với kích thước video
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+
+  // Vẽ hình ảnh từ video lên canvas
+  context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+  // Lấy dữ liệu ảnh từ canvas
+  const imageData = canvas.toDataURL('image/png');
+
+  // Làm gì đó với dữ liệu ảnh, ví dụ: hiển thị ảnh trong một thẻ img
+  const img = document.createElement('img');
+  img.src = imageData;
+  document.body.appendChild(img);
+}
+
+    </script>
+</body>
+</html>
